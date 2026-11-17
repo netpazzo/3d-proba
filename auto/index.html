@@ -173,6 +173,35 @@
     .opcija-naziv { font-weight: 600; }
     .opcija-opis { font-size: 13px; color: var(--muted); line-height: 1.4; }
     .opcije.kartice .doplata { margin-left: auto; white-space: nowrap; }
+    .vizualno-skriveno { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    /* usporedba spremljenih konfiguracija */
+    .usporedba { margin: 0 0 20px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+    .usporedba h2 { font-size: 16px; margin: 0 0 4px; }
+    .info .usporedba-uvod { font-size: 13px; margin: 0 0 12px; }
+    .usporedba-okvir { overflow-x: auto; margin: 0 -4px; }
+    .usporedba table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 360px; }
+    .usporedba th, .usporedba td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    .usporedba thead th { font-weight: 600; }
+    .usporedba tbody th { font-weight: 400; color: var(--muted); white-space: nowrap; }
+    .usporedba tr.razlika td { font-weight: 600; }
+    .usporedba tr.razlika th::after { content: " •"; color: var(--accent); }
+    .usporedba td small { display: block; color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+    .usporedba tr.ukupno td, .usporedba tr.ukupno th { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; border-bottom: 0; }
+    .usporedba .stupac-akcije { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+    .usporedba .mali {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      padding: 6px 10px;
+      min-height: 32px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .usporedba .mali:hover { border-color: var(--muted); }
+    .usporedba .mali:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .usporedba .oznaka-najpovoljnija { color: #1f6b45; font-weight: 600; }
     /* traka s ukupnom cijenom na mobitelu */
     .traka-cijena { display: none; }
     .traka-oznaka { display: block; font-size: 12px; color: var(--muted); }
@@ -305,7 +334,18 @@
           <a class="buy" id="upit" hidden>Pošalji upit</a>
           <button class="sporedni" type="button" id="kopiraj">Kopiraj poveznicu</button>
           <button class="sporedni" type="button" id="vrati">Vrati na zadano</button>
+          <button class="sporedni" type="button" id="spremi" hidden>Spremi za usporedbu</button>
           <span class="obavijest" id="kopirano" role="status"></span>
+        </div>
+      </div>
+      <div class="usporedba" id="usporedba" hidden>
+        <h2>Usporedba konfiguracija</h2>
+        <p class="usporedba-uvod">Spremljeno u ovom pregledniku, najviše 3. Retci koji se razlikuju su istaknuti.</p>
+        <div class="usporedba-okvir" id="usporedba-okvir"></div>
+        <div class="sazetak-akcije">
+          <a class="buy" id="upit-sve" hidden>Pošalji upit za sve</a>
+          <button class="sporedni" type="button" id="obrisi-sve">Obriši usporedbu</button>
+          <span class="obavijest" id="usporedba-obavijest" role="status"></span>
         </div>
       </div>
       <p>Probni konfigurator: odaberite boju, spojler, naplatke i kočione čeljusti. Model: Eric Chadwick, Darmstadt Graphics Group (CC-BY 4.0), iz Khronosove zbirke glTF primjera. Spojleri su probni dijelovi Studija 19.</p>
@@ -322,7 +362,7 @@
     <a class="buy" id="traka-akcija" href="#sazetak">Sažetak</a>
   </div>
 
-  <script type="application/json" id="konfig-podaci">{"osnovna": 89900.0, "grupe": [{"naziv": "Boja", "kljuc": "boja", "vrsta": "ugradene", "opcije": [{"naziv": "Karmin crvena", "izvedba": "Carmine Candy", "uzorak": "#A3121A", "cijena": 0.0, "opis": null, "kljuc": "karmin-crvena"}, {"naziv": "Biserno bijela", "izvedba": "Pearly Swirly", "uzorak": "#ECE8E1", "cijena": 1900.0, "opis": null, "kljuc": "biserno-bijela"}, {"naziv": "Grafit", "izvedba": "Torched Graphite", "uzorak": "#3B3C40", "cijena": 1200.0, "opis": null, "kljuc": "grafit"}], "upravljani": []}, {"naziv": "Spojler", "kljuc": "spojler", "vrsta": "materijali", "opcije": [{"naziv": "Bez spojlera", "promjene": {}, "uzorak": null, "dijelovi": [], "cijena": 0.0, "opis": "Čista linija stražnjeg dijela", "kljuc": "bez-spojlera"}, {"naziv": "Niski rub", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerRub"], "cijena": 650.0, "opis": "Diskretan karbonski rub na poklopcu prtljažnika", "kljuc": "niski-rub"}, {"naziv": "Sportsko krilo", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerKrilo"], "cijena": 2400.0, "opis": "Karbonsko krilo na nosačima, s bočnim pločama", "kljuc": "sportsko-krilo"}], "upravljani": ["SpojlerKrilo", "SpojlerRub"]}, {"naziv": "Naplatci", "kljuc": "naplatci", "vrsta": "materijali", "opcije": [{"naziv": "Crni", "promjene": {"Rim1": {"boja": [0.01033, 0.01033, 0.01033], "metal": 0.0, "hrapavost": 0.4}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#1A1A1A", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crni"}, {"naziv": "Srebrni", "promjene": {"Rim1": {"boja": [0.521, 0.53948, 0.57112], "metal": 1.0, "hrapavost": 0.28}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#BFC2C7", "dijelovi": [], "cijena": 900.0, "opis": null, "kljuc": "srebrni"}, {"naziv": "Zlatni", "promjene": {"Rim1": {"boja": [0.47932, 0.28315, 0.04231], "metal": 1.0, "hrapavost": 0.3}, "Rim2": {"boja": [0.7913, 0.57112, 0.18782], "metal": 1.0, "hrapavost": 0.12}}, "uzorak": "#B8913A", "dijelovi": [], "cijena": 1800.0, "opis": null, "kljuc": "zlatni"}], "upravljani": []}, {"naziv": "Kočione čeljusti", "kljuc": "kocione-celjusti", "vrsta": "materijali", "opcije": [{"naziv": "Crvene", "promjene": {"Brake": {"boja": [0.65837, 0.0, 0.0]}}, "uzorak": "#D40000", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crvene"}, {"naziv": "Žute", "promjene": {"Brake": {"boja": [0.80695, 0.43415, 0.0]}}, "uzorak": "#E8B000", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "zute"}, {"naziv": "Plave", "promjene": {"Brake": {"boja": [0.01298, 0.10462, 0.47932]}}, "uzorak": "#1E5BB8", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "plave"}], "upravljani": []}], "naziv": "Konceptni automobil", "email": "upit@example.com"}</script>
+  <script type="application/json" id="konfig-podaci">{"osnovna": 89900.0, "grupe": [{"naziv": "Boja", "kljuc": "boja", "vrsta": "ugradene", "opcije": [{"naziv": "Karmin crvena", "izvedba": "Carmine Candy", "uzorak": "#A3121A", "cijena": 0.0, "opis": null, "kljuc": "karmin-crvena"}, {"naziv": "Biserno bijela", "izvedba": "Pearly Swirly", "uzorak": "#ECE8E1", "cijena": 1900.0, "opis": null, "kljuc": "biserno-bijela"}, {"naziv": "Grafit", "izvedba": "Torched Graphite", "uzorak": "#3B3C40", "cijena": 1200.0, "opis": null, "kljuc": "grafit"}], "upravljani": []}, {"naziv": "Spojler", "kljuc": "spojler", "vrsta": "materijali", "opcije": [{"naziv": "Bez spojlera", "promjene": {}, "uzorak": null, "dijelovi": [], "cijena": 0.0, "opis": "Čista linija stražnjeg dijela", "kljuc": "bez-spojlera"}, {"naziv": "Niski rub", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerRub"], "cijena": 650.0, "opis": "Diskretan karbonski rub na poklopcu prtljažnika", "kljuc": "niski-rub"}, {"naziv": "Sportsko krilo", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerKrilo"], "cijena": 2400.0, "opis": "Karbonsko krilo na nosačima, s bočnim pločama", "kljuc": "sportsko-krilo"}], "upravljani": ["SpojlerKrilo", "SpojlerRub"]}, {"naziv": "Naplatci", "kljuc": "naplatci", "vrsta": "materijali", "opcije": [{"naziv": "Crni", "promjene": {"Rim1": {"boja": [0.01033, 0.01033, 0.01033], "metal": 0.0, "hrapavost": 0.4}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#1A1A1A", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crni"}, {"naziv": "Srebrni", "promjene": {"Rim1": {"boja": [0.521, 0.53948, 0.57112], "metal": 1.0, "hrapavost": 0.28}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#BFC2C7", "dijelovi": [], "cijena": 900.0, "opis": null, "kljuc": "srebrni"}, {"naziv": "Zlatni", "promjene": {"Rim1": {"boja": [0.47932, 0.28315, 0.04231], "metal": 1.0, "hrapavost": 0.3}, "Rim2": {"boja": [0.7913, 0.57112, 0.18782], "metal": 1.0, "hrapavost": 0.12}}, "uzorak": "#B8913A", "dijelovi": [], "cijena": 1800.0, "opis": null, "kljuc": "zlatni"}], "upravljani": []}, {"naziv": "Kočione čeljusti", "kljuc": "kocione-celjusti", "vrsta": "materijali", "opcije": [{"naziv": "Crvene", "promjene": {"Brake": {"boja": [0.65837, 0.0, 0.0]}}, "uzorak": "#D40000", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crvene"}, {"naziv": "Žute", "promjene": {"Brake": {"boja": [0.80695, 0.43415, 0.0]}}, "uzorak": "#E8B000", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "zute"}, {"naziv": "Plave", "promjene": {"Brake": {"boja": [0.01298, 0.10462, 0.47932]}}, "uzorak": "#1E5BB8", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "plave"}], "upravljani": []}], "naziv": "Konceptni automobil", "email": "upit@example.com", "usporedba": true, "id": "konceptni-automobil"}</script>
   <script>
     const mv = document.getElementById('mv');
     const bar = document.getElementById('bar');
@@ -516,6 +556,158 @@
     document.querySelectorAll('.opcija').forEach((btn) => {
       btn.addEventListener('click', () => odaberi(Number(btn.dataset.g), Number(btn.dataset.o)));
     });
+
+    // Usporedba: do 3 spremljene konfiguracije, u pregledniku kupca (localStorage), bez slanja ikamo.
+    const USP_KLJUC = 'konfig-usporedba:' + (PODACI.id || 'proizvod');
+    const USP_MAX = 3;
+    function citajSpremljene() {
+      try {
+        const v = JSON.parse(localStorage.getItem(USP_KLJUC) || '[]');
+        return Array.isArray(v) ? v.filter((x) => x && typeof x === 'object') : [];
+      } catch (e) { return []; }
+    }
+    function pisiSpremljene(lista) {
+      try { localStorage.setItem(USP_KLJUC, JSON.stringify(lista)); return true; } catch (e) { return false; }
+    }
+    // spremljena konfiguracija je {kljuc_grupe: kljuc_opcije}; nepoznato -> zadana opcija
+    function indeksiZa(k) {
+      return KONFIG.map((g) => Math.max(0, g.opcije.findIndex((o) => o.kljuc === k[g.kljuc])));
+    }
+    function trenutniKljucevi() {
+      const k = {};
+      KONFIG.forEach((g, gi) => { k[g.kljuc] = g.opcije[odabir[gi]].kljuc; });
+      return k;
+    }
+    function cijenaZa(idx) {
+      return PODACI.osnovna + KONFIG.reduce((s, g, gi) => s + (g.opcije[idx[gi]].cijena || 0), 0);
+    }
+    function adresaZa(k) {
+      const url = new URL(location.href);
+      url.hash = '';
+      KONFIG.forEach((g) => url.searchParams.set(g.kljuc, k[g.kljuc]));
+      return url.toString();
+    }
+    function javi(tekst) { document.getElementById('usporedba-obavijest').textContent = tekst; }
+    function el(tag, tekst, cls) {
+      const e = document.createElement(tag);
+      if (tekst !== undefined) e.textContent = tekst;
+      if (cls) e.className = cls;
+      return e;
+    }
+    function crtajUsporedbu() {
+      const lista = citajSpremljene();
+      const okvir = document.getElementById('usporedba-okvir');
+      document.getElementById('usporedba').hidden = lista.length === 0;
+      okvir.replaceChildren();
+      if (!lista.length) return;
+      const idx = lista.map(indeksiZa);
+      const tbl = el('table');
+      tbl.append(el('caption', 'Usporedba ' + lista.length + ' konfiguracije', 'vizualno-skriveno'));
+      const glava = el('tr');
+      glava.append(el('th', ''));
+      lista.forEach((k, i) => {
+        const th = el('th');
+        th.scope = 'col';
+        th.append(el('span', 'Konfiguracija ' + (i + 1)));
+        const akc = el('div', undefined, 'stupac-akcije');
+        const prikazi = el('button', 'Prikaži', 'mali');
+        prikazi.type = 'button';
+        prikazi.setAttribute('aria-label', 'Prikaži konfiguraciju ' + (i + 1) + ' u 3D prikazu');
+        prikazi.addEventListener('click', () => {
+          indeksiZa(k).forEach((oi, gi) => odaberi(gi, oi, false));
+          osvjeziSazetak();
+          viewer.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+          javi('Konfiguracija ' + (i + 1) + ' je u 3D prikazu.');
+        });
+        const ukloni = el('button', 'Ukloni', 'mali');
+        ukloni.type = 'button';
+        ukloni.setAttribute('aria-label', 'Ukloni konfiguraciju ' + (i + 1) + ' iz usporedbe');
+        ukloni.addEventListener('click', () => {
+          const nova = citajSpremljene();
+          nova.splice(i, 1);
+          pisiSpremljene(nova);
+          crtajUsporedbu();
+          javi('Konfiguracija je uklonjena.');
+        });
+        akc.append(prikazi, ukloni);
+        th.append(akc);
+        glava.append(th);
+      });
+      const thead = el('thead');
+      thead.append(glava);
+      const tbody = el('tbody');
+      KONFIG.forEach((g, gi) => {
+        const tr = el('tr');
+        const razlicito = new Set(idx.map((x) => x[gi])).size > 1;
+        if (razlicito) tr.className = 'razlika';
+        const th = el('th', g.naziv);
+        th.scope = 'row';
+        tr.append(th);
+        idx.forEach((x) => {
+          const o = g.opcije[x[gi]];
+          const td = el('td', o.naziv);
+          if (IMA_CIJENE) td.append(el('small', o.cijena ? '+' + eur.format(o.cijena) : 'uključeno'));
+          tr.append(td);
+        });
+        tbody.append(tr);
+      });
+      if (IMA_CIJENE) {
+        const cijene = idx.map(cijenaZa);
+        const min = Math.min(...cijene);
+        const tr = el('tr', undefined, 'ukupno');
+        const th = el('th', 'Ukupno');
+        th.scope = 'row';
+        tr.append(th);
+        cijene.forEach((c) => {
+          const td = el('td', eur.format(c));
+          if (lista.length > 1) {
+            td.append(c === min ? el('small', 'najpovoljnija', 'oznaka-najpovoljnija') : el('small', '+' + eur.format(c - min)));
+          }
+          tr.append(td);
+        });
+        tbody.append(tr);
+      }
+      tbl.append(thead, tbody);
+      okvir.append(tbl);
+      const sve = document.getElementById('upit-sve');
+      if (PODACI.email) {
+        const r = ['Poštovani,', '', 'šaljem upit za „' + PODACI.naziv + '” i molim usporedbu ovih konfiguracija:'];
+        lista.forEach((k, i) => {
+          const x = indeksiZa(k);
+          r.push('', 'Konfiguracija ' + (i + 1) + (IMA_CIJENE ? ' – ' + eur.format(cijenaZa(x)) : ''));
+          KONFIG.forEach((g, gi) => {
+            const o = g.opcije[x[gi]];
+            r.push('- ' + g.naziv + ': ' + o.naziv + (IMA_CIJENE ? (o.cijena ? ' (+' + eur.format(o.cijena) + ')' : ' (uključeno)') : ''));
+          });
+          r.push(adresaZa(k));
+        });
+        r.push('', 'Lijep pozdrav');
+        sve.hidden = false;
+        sve.href = 'mailto:' + PODACI.email + '?subject=' + encodeURIComponent('Upit (usporedba): ' + PODACI.naziv)
+          + '&body=' + encodeURIComponent(r.join('\r\n'));
+      }
+    }
+    function pokreniUsporedbu() {
+      const spremi = document.getElementById('spremi');
+      spremi.hidden = false;
+      spremi.addEventListener('click', () => {
+        const lista = citajSpremljene();
+        const k = trenutniKljucevi();
+        const isti = lista.findIndex((x) => KONFIG.every((g) => x[g.kljuc] === k[g.kljuc]));
+        if (isti >= 0) { javi('Ova konfiguracija je već spremljena (konfiguracija ' + (isti + 1) + ').'); return; }
+        if (lista.length >= USP_MAX) { javi('Spremljene su najviše 3 konfiguracije. Uklonite jednu pa spremite novu.'); return; }
+        lista.push(k);
+        if (!pisiSpremljene(lista)) { javi('Preglednik ne dopušta spremanje.'); return; }
+        crtajUsporedbu();
+        javi('Spremljeno kao konfiguracija ' + lista.length + '.');
+      });
+      document.getElementById('obrisi-sve').addEventListener('click', () => {
+        pisiSpremljene([]);
+        crtajUsporedbu();
+        javi('Usporedba je obrisana.');
+      });
+      crtajUsporedbu();
+    }
     document.getElementById('kopiraj').addEventListener('click', async () => {
       const obavijest = document.getElementById('kopirano');
       try {
@@ -541,6 +733,7 @@
       });
       procitajIzAdrese();
       osvjeziSazetak();
+      if (PODACI.usporedba) pokreniUsporedbu();
       mv.addEventListener('load', primijeniMaterijale);
       mv.addEventListener('variant-applied', primijeniMaterijale);
     }
