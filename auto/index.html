@@ -166,6 +166,35 @@
     .sporedni:hover { border-color: var(--muted); }
     .sporedni:focus-visible, .buy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .obavijest { font-size: 13px; color: var(--muted); }
+    /* opcije s opisom prikazuju se kao kartice */
+    .opcije.kartice { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .opcije.kartice .opcija { width: 100%; border-radius: 12px; padding: 12px 14px; text-align: left; }
+    .opcija-tekst { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .opcija-naziv { font-weight: 600; }
+    .opcija-opis { font-size: 13px; color: var(--muted); line-height: 1.4; }
+    .opcije.kartice .doplata { margin-left: auto; white-space: nowrap; }
+    /* traka s ukupnom cijenom na mobitelu */
+    .traka-cijena { display: none; }
+    .traka-oznaka { display: block; font-size: 12px; color: var(--muted); }
+    .traka-cijena strong { font-size: 20px; font-variant-numeric: tabular-nums; }
+    @media (max-width: 820px) {
+      body.ima-traku { padding-bottom: 80px; }
+      body.ima-traku .traka-cijena {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 900;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 16px;
+        background: var(--card);
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+      }
+      .traka-cijena .buy { margin: 0; padding: 12px 18px; text-decoration: none; }
+      body.fs-open .traka-cijena { display: none !important; }
+    }
     .info h1 { font-size: 30px; margin: 4px 0 8px; letter-spacing: -0.01em; }
     .price { font-size: 26px; font-weight: 600; margin: 16px 0; }
     .info p { color: var(--muted); line-height: 1.6; }
@@ -244,10 +273,10 @@
         </div>
         <div class="grupa" role="group" aria-labelledby="grupa-1">
           <div class="grupa-naslov"><span id="grupa-1">Spojler</span><span class="odabrano" id="grupa-1-odabrano">Bez spojlera</span></div>
-          <div class="opcije">
-            <button type="button" class="opcija bez-uzorka" data-g="1" data-o="0" aria-pressed="true">Bez spojlera</button>
-            <button type="button" class="opcija bez-uzorka" data-g="1" data-o="1" aria-pressed="false">Niski rub<span class="doplata">+650 €</span></button>
-            <button type="button" class="opcija bez-uzorka" data-g="1" data-o="2" aria-pressed="false">Sportsko krilo<span class="doplata">+2.400 €</span></button>
+          <div class="opcije kartice">
+            <button type="button" class="opcija bez-uzorka" data-g="1" data-o="0" aria-pressed="true"><span class="opcija-tekst"><span class="opcija-naziv">Bez spojlera</span><span class="opcija-opis">Čista linija stražnjeg dijela</span></span><span class="doplata">uključeno</span></button>
+            <button type="button" class="opcija bez-uzorka" data-g="1" data-o="1" aria-pressed="false"><span class="opcija-tekst"><span class="opcija-naziv">Niski rub</span><span class="opcija-opis">Diskretan karbonski rub na poklopcu prtljažnika</span></span><span class="doplata">+650 €</span></button>
+            <button type="button" class="opcija bez-uzorka" data-g="1" data-o="2" aria-pressed="false"><span class="opcija-tekst"><span class="opcija-naziv">Sportsko krilo</span><span class="opcija-opis">Karbonsko krilo na nosačima, s bočnim pločama</span></span><span class="doplata">+2.400 €</span></button>
           </div>
         </div>
         <div class="grupa" role="group" aria-labelledby="grupa-2">
@@ -275,6 +304,7 @@
         <div class="sazetak-akcije">
           <a class="buy" id="upit" hidden>Pošalji upit</a>
           <button class="sporedni" type="button" id="kopiraj">Kopiraj poveznicu</button>
+          <button class="sporedni" type="button" id="vrati">Vrati na zadano</button>
           <span class="obavijest" id="kopirano" role="status"></span>
         </div>
       </div>
@@ -287,7 +317,12 @@
     </section>
   </main>
 
-  <script type="application/json" id="konfig-podaci">{"osnovna": 89900.0, "grupe": [{"naziv": "Boja", "vrsta": "ugradene", "opcije": [{"naziv": "Karmin crvena", "izvedba": "Carmine Candy", "uzorak": "#A3121A", "cijena": 0.0}, {"naziv": "Biserno bijela", "izvedba": "Pearly Swirly", "uzorak": "#ECE8E1", "cijena": 1900.0}, {"naziv": "Grafit", "izvedba": "Torched Graphite", "uzorak": "#3B3C40", "cijena": 1200.0}], "upravljani": []}, {"naziv": "Spojler", "vrsta": "materijali", "opcije": [{"naziv": "Bez spojlera", "promjene": {}, "uzorak": null, "dijelovi": [], "cijena": 0.0}, {"naziv": "Niski rub", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerRub"], "cijena": 650.0}, {"naziv": "Sportsko krilo", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerKrilo"], "cijena": 2400.0}], "upravljani": ["SpojlerKrilo", "SpojlerRub"]}, {"naziv": "Naplatci", "vrsta": "materijali", "opcije": [{"naziv": "Crni", "promjene": {"Rim1": {"boja": [0.01033, 0.01033, 0.01033], "metal": 0.0, "hrapavost": 0.4}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#1A1A1A", "dijelovi": [], "cijena": 0.0}, {"naziv": "Srebrni", "promjene": {"Rim1": {"boja": [0.521, 0.53948, 0.57112], "metal": 1.0, "hrapavost": 0.28}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#BFC2C7", "dijelovi": [], "cijena": 900.0}, {"naziv": "Zlatni", "promjene": {"Rim1": {"boja": [0.47932, 0.28315, 0.04231], "metal": 1.0, "hrapavost": 0.3}, "Rim2": {"boja": [0.7913, 0.57112, 0.18782], "metal": 1.0, "hrapavost": 0.12}}, "uzorak": "#B8913A", "dijelovi": [], "cijena": 1800.0}], "upravljani": []}, {"naziv": "Kočione čeljusti", "vrsta": "materijali", "opcije": [{"naziv": "Crvene", "promjene": {"Brake": {"boja": [0.65837, 0.0, 0.0]}}, "uzorak": "#D40000", "dijelovi": [], "cijena": 0.0}, {"naziv": "Žute", "promjene": {"Brake": {"boja": [0.80695, 0.43415, 0.0]}}, "uzorak": "#E8B000", "dijelovi": [], "cijena": 450.0}, {"naziv": "Plave", "promjene": {"Brake": {"boja": [0.01298, 0.10462, 0.47932]}}, "uzorak": "#1E5BB8", "dijelovi": [], "cijena": 450.0}], "upravljani": []}], "naziv": "Konceptni automobil", "email": "upit@example.com"}</script>
+  <div class="traka-cijena" id="traka" hidden>
+    <div><span class="traka-oznaka">Ukupna cijena</span><strong id="traka-cijena"></strong></div>
+    <a class="buy" id="traka-akcija" href="#sazetak">Sažetak</a>
+  </div>
+
+  <script type="application/json" id="konfig-podaci">{"osnovna": 89900.0, "grupe": [{"naziv": "Boja", "kljuc": "boja", "vrsta": "ugradene", "opcije": [{"naziv": "Karmin crvena", "izvedba": "Carmine Candy", "uzorak": "#A3121A", "cijena": 0.0, "opis": null, "kljuc": "karmin-crvena"}, {"naziv": "Biserno bijela", "izvedba": "Pearly Swirly", "uzorak": "#ECE8E1", "cijena": 1900.0, "opis": null, "kljuc": "biserno-bijela"}, {"naziv": "Grafit", "izvedba": "Torched Graphite", "uzorak": "#3B3C40", "cijena": 1200.0, "opis": null, "kljuc": "grafit"}], "upravljani": []}, {"naziv": "Spojler", "kljuc": "spojler", "vrsta": "materijali", "opcije": [{"naziv": "Bez spojlera", "promjene": {}, "uzorak": null, "dijelovi": [], "cijena": 0.0, "opis": "Čista linija stražnjeg dijela", "kljuc": "bez-spojlera"}, {"naziv": "Niski rub", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerRub"], "cijena": 650.0, "opis": "Diskretan karbonski rub na poklopcu prtljažnika", "kljuc": "niski-rub"}, {"naziv": "Sportsko krilo", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerKrilo"], "cijena": 2400.0, "opis": "Karbonsko krilo na nosačima, s bočnim pločama", "kljuc": "sportsko-krilo"}], "upravljani": ["SpojlerKrilo", "SpojlerRub"]}, {"naziv": "Naplatci", "kljuc": "naplatci", "vrsta": "materijali", "opcije": [{"naziv": "Crni", "promjene": {"Rim1": {"boja": [0.01033, 0.01033, 0.01033], "metal": 0.0, "hrapavost": 0.4}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#1A1A1A", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crni"}, {"naziv": "Srebrni", "promjene": {"Rim1": {"boja": [0.521, 0.53948, 0.57112], "metal": 1.0, "hrapavost": 0.28}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#BFC2C7", "dijelovi": [], "cijena": 900.0, "opis": null, "kljuc": "srebrni"}, {"naziv": "Zlatni", "promjene": {"Rim1": {"boja": [0.47932, 0.28315, 0.04231], "metal": 1.0, "hrapavost": 0.3}, "Rim2": {"boja": [0.7913, 0.57112, 0.18782], "metal": 1.0, "hrapavost": 0.12}}, "uzorak": "#B8913A", "dijelovi": [], "cijena": 1800.0, "opis": null, "kljuc": "zlatni"}], "upravljani": []}, {"naziv": "Kočione čeljusti", "kljuc": "kocione-celjusti", "vrsta": "materijali", "opcije": [{"naziv": "Crvene", "promjene": {"Brake": {"boja": [0.65837, 0.0, 0.0]}}, "uzorak": "#D40000", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crvene"}, {"naziv": "Žute", "promjene": {"Brake": {"boja": [0.80695, 0.43415, 0.0]}}, "uzorak": "#E8B000", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "zute"}, {"naziv": "Plave", "promjene": {"Brake": {"boja": [0.01298, 0.10462, 0.47932]}}, "uzorak": "#1E5BB8", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "plave"}], "upravljani": []}], "naziv": "Konceptni automobil", "email": "upit@example.com"}</script>
   <script>
     const mv = document.getElementById('mv');
     const bar = document.getElementById('bar');
@@ -402,13 +437,38 @@
     function ukupno() {
       return PODACI.osnovna + KONFIG.reduce((s, g, gi) => s + (g.opcije[odabir[gi]].cijena || 0), 0);
     }
-    function tekstKonfiguracije() {
-      const redovi = KONFIG.map((g, gi) => {
+    function tekstUpita() {
+      const r = ['Poštovani,', '', 'šaljem upit za „' + PODACI.naziv + '” prema odabranoj konfiguraciji:', ''];
+      if (IMA_CIJENE) r.push('Osnovna cijena: ' + eur.format(PODACI.osnovna));
+      KONFIG.forEach((g, gi) => {
         const o = g.opcije[odabir[gi]];
-        return g.naziv + ': ' + o.naziv + (IMA_CIJENE && o.cijena ? ' (+' + eur.format(o.cijena) + ')' : '');
+        const cijena = IMA_CIJENE ? (o.cijena ? ' (+' + eur.format(o.cijena) + ')' : ' (uključeno)') : '';
+        r.push('- ' + g.naziv + ': ' + o.naziv + cijena);
       });
-      if (IMA_CIJENE) redovi.push('Ukupno: ' + eur.format(ukupno()));
-      return redovi.join('\n');
+      if (IMA_CIJENE) {
+        r.push('', 'Ukupna cijena: ' + eur.format(ukupno()));
+        const napomena = document.getElementById('sazetak-napomena').textContent.trim();
+        if (napomena) r.push('Napomena: ' + napomena);
+      }
+      r.push('', 'Poveznica na konfiguraciju:', location.href, '', 'Lijep pozdrav');
+      return r.join('\r\n');
+    }
+    // poveznica s čitljivim imenima: ?boja=biserno-bijela&spojler=sportsko-krilo
+    function zapisiUAdresu() {
+      const url = new URL(location.href);
+      KONFIG.forEach((g, gi) => url.searchParams.set(g.kljuc, g.opcije[odabir[gi]].kljuc));
+      if (/konfig=/.test(url.hash)) url.hash = '';
+      history.replaceState(history.state, '', url);
+    }
+    function procitajIzAdrese() {
+      const p = new URLSearchParams(location.search);
+      KONFIG.forEach((g, gi) => {
+        const oi = g.opcije.findIndex((o) => o.kljuc === p.get(g.kljuc));
+        if (oi >= 0) odaberi(gi, oi, false);
+      });
+      // stari oblik poveznice (#konfig=1.2.2.0)
+      const m = location.hash.match(/konfig=([\d.]+)/);
+      if (m) m[1].split('.').forEach((v, gi) => { if (gi < KONFIG.length) odaberi(gi, Number(v), false); });
     }
     function osvjeziSazetak() {
       const popis = document.getElementById('sazetak-popis');
@@ -426,18 +486,22 @@
         const t = eur.format(ukupno());
         document.getElementById('sazetak-ukupno').textContent = t;
         document.getElementById('cijena').textContent = t;
+        document.getElementById('traka-cijena').textContent = t;
       }
-      // poveznica na ovu konfiguraciju (može se poslati ili spremiti)
-      history.replaceState(history.state, '', '#konfig=' + odabir.join('.'));
+      zapisiUAdresu();
       const upit = document.getElementById('upit');
+      const akcija = document.getElementById('traka-akcija');
       if (PODACI.email) {
-        upit.hidden = false;
-        upit.href = 'mailto:' + PODACI.email
+        const href = 'mailto:' + PODACI.email
           + '?subject=' + encodeURIComponent('Upit: ' + PODACI.naziv)
-          + '&body=' + encodeURIComponent(tekstKonfiguracije() + '\n\nPoveznica: ' + location.href);
+          + '&body=' + encodeURIComponent(tekstUpita());
+        upit.hidden = false;
+        upit.href = href;
+        akcija.href = href;
+        akcija.textContent = 'Pošalji upit';
       }
     }
-    function odaberi(gi, oi) {
+    function odaberi(gi, oi, osvjezi = true) {
       const g = KONFIG[gi];
       if (!g || !g.opcije[oi]) return;
       odabir[gi] = oi;
@@ -447,7 +511,7 @@
       document.getElementById('grupa-' + gi + '-odabrano').textContent = g.opcije[oi].naziv;
       if (g.vrsta === 'ugradene') mv.variantName = g.opcije[oi].izvedba;
       else primijeniMaterijale();
-      osvjeziSazetak();
+      if (osvjezi) osvjeziSazetak();
     }
     document.querySelectorAll('.opcija').forEach((btn) => {
       btn.addEventListener('click', () => odaberi(Number(btn.dataset.g), Number(btn.dataset.o)));
@@ -467,9 +531,15 @@
         document.getElementById('sazetak-ukupno-red').hidden = true;
         document.getElementById('sazetak-napomena').hidden = true;
       }
-      // konfiguracija iz poveznice (#konfig=0.2.1.0)
-      const m = location.hash.match(/konfig=([\d.]+)/);
-      if (m) m[1].split('.').forEach((v, gi) => { if (gi < KONFIG.length) odaberi(gi, Number(v)); });
+      if (IMA_CIJENE) {
+        document.getElementById('traka').hidden = false;
+        document.body.classList.add('ima-traku');
+      }
+      document.getElementById('vrati').addEventListener('click', () => {
+        KONFIG.forEach((g, gi) => odaberi(gi, 0, false));
+        osvjeziSazetak();
+      });
+      procitajIzAdrese();
       osvjeziSazetak();
       mv.addEventListener('load', primijeniMaterijale);
       mv.addEventListener('variant-applied', primijeniMaterijale);
