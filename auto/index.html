@@ -251,10 +251,397 @@
       model-viewer { height: 420px; }
       .info h1 { font-size: 24px; }
     }
+    .traka-naziv { display: none; }
+    .traka-gumbi { display: flex; gap: 8px; }
+
+    /* ================================================================
+       Izgled "premium" (u receptu "izgled": "premium"): studijski
+       konfigurator. 3D prikaz preko većeg dijela ekrana, opcije po
+       koracima u panelu uz desni rub, stalna donja traka s cijenom.
+       Sve je ograničeno na body.izgled-premium; zadani izgled se ne mijenja.
+       ================================================================ */
+    .izgled-premium {
+      --p-tinta: #000000;
+      --p-tekst: #1b1d20;
+      --p-tiho: #5b5f65;
+      --p-crta: #d6d9dc;
+      --p-ploha: #ffffff;
+      --p-prsten: #9aa0a6;
+      --p-traka-h: 76px;
+      --p-gore: 0px;
+      --text: var(--p-tekst);
+      --muted: var(--p-tiho);
+      --line: var(--p-crta);
+      --card: var(--p-ploha);
+      --accent: var(--p-tinta);
+      --bg: var(--p-ploha);
+      background: var(--p-ploha);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .izgled-premium:not(.ima-traku) { --p-traka-h: 0px; }
+    .izgled-premium .page {
+      max-width: none;
+      padding: 0;
+      gap: 0;
+      grid-template-columns: minmax(0, 2fr) minmax(360px, 1fr);
+      align-items: start;
+    }
+    /* studijski prostor: svijetli zid koji se meko spušta u tamniji pod */
+    .izgled-premium .viewer {
+      position: sticky;
+      top: 0;
+      height: calc(100vh - var(--p-traka-h));
+      height: calc(100dvh - var(--p-traka-h));
+      border: 0;
+      border-radius: 0;
+      background: #eceef0;
+    }
+    .izgled-premium model-viewer {
+      height: 100%;
+      background:
+        radial-gradient(130% 48% at 50% 100%, #c7cbd0 0%, rgba(199, 203, 208, 0) 70%),
+        linear-gradient(180deg, #f8f9f9 0%, #eef0f1 52%, #e2e5e8 100%);
+    }
+    .izgled-premium .viewer.fullscreen {
+      position: fixed;
+      inset: 0;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .izgled-premium .progress { height: 2px; }
+    .izgled-premium .hint {
+      bottom: 20px;
+      padding: 0;
+      background: none;
+      color: var(--p-tiho);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .izgled-premium .pause-btn {
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--p-tinta);
+      box-shadow: inset 0 0 0 1px var(--p-crta);
+    }
+    .izgled-premium .pause-btn:hover { background: var(--p-ploha); box-shadow: inset 0 0 0 1px var(--p-tinta); }
+    .izgled-premium .fs-btn { left: 68px; }
+    .izgled-premium .ar-btn {
+      top: 20px;
+      right: 20px;
+      border-radius: 2px;
+      background: var(--p-tinta);
+      padding: 13px 18px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .izgled-premium .info {
+      min-width: 0;
+      min-height: calc(100vh - var(--p-traka-h));
+      min-height: calc(100dvh - var(--p-traka-h));
+      padding: 40px 40px 48px;
+      border-left: 1px solid var(--p-crta);
+    }
+    .izgled-premium .info h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--p-tinta);
+    }
+    .izgled-premium .price {
+      margin: 0 0 28px;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--p-tiho);
+      font-variant-numeric: tabular-nums;
+    }
+    .izgled-premium .info p { line-height: 1.6; }
+
+    /* navigacija po koracima */
+    .izgled-premium .koraci {
+      position: sticky;
+      top: var(--p-gore);
+      z-index: 4;
+      margin: 0 -40px 32px;
+      background: var(--p-ploha);
+      box-shadow: inset 0 -1px 0 var(--p-crta);
+    }
+    .izgled-premium .koraci-niz {
+      position: relative;
+      display: flex;
+      gap: 22px;
+      padding: 0 40px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .izgled-premium .koraci-niz::-webkit-scrollbar { display: none; }
+    /* kad svi koraci ne stanu, rub koji se može pomaknuti blijedi */
+    .izgled-premium .koraci-niz.vise-desno { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent); }
+    .izgled-premium .koraci-niz.vise-lijevo { -webkit-mask-image: linear-gradient(90deg, transparent, #000 56px); mask-image: linear-gradient(90deg, transparent, #000 56px); }
+    .izgled-premium .koraci-niz.vise-lijevo.vise-desno { -webkit-mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent); }
+    .izgled-premium .koraci button {
+      position: relative;
+      flex: none;
+      min-height: 48px;
+      padding: 16px 0 14px;
+      border: 0;
+      background: none;
+      color: var(--p-tiho);
+      font: inherit;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .izgled-premium .koraci button:hover { color: var(--p-tinta); }
+    .izgled-premium .koraci button[aria-current="step"] { color: var(--p-tinta); }
+    .izgled-premium .koraci button[aria-current="step"]::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      background: var(--p-tinta);
+    }
+    .izgled-premium .koraci button:focus-visible { outline: 2px solid var(--p-tinta); outline-offset: -2px; }
+    .izgled-premium .konfig { display: block; margin: 0; scroll-margin-top: calc(var(--p-gore) + 49px); }
+    .izgled-premium .grupa:focus { outline: none; }
+    .izgled-premium .grupa-naslov { display: block; margin: 0 0 22px; font-weight: 400; }
+    /* naziv grupe je već u koracima; ostaje za čitače zaslona */
+    .izgled-premium .grupa-naslov > span:first-child {
+      position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+    }
+    .izgled-premium .odabrano {
+      display: block;
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--p-tinta);
+    }
+
+    /* boje: krugovi s prstenom oko odabrane i nazivom ispod */
+    .izgled-premium .opcije {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+      gap: 18px 8px;
+    }
+    .izgled-premium .opcija {
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 6px;
+      min-height: 0;
+      padding: 6px 4px 8px;
+      border: 0;
+      border-radius: 2px;
+      background: none;
+      color: var(--p-tekst);
+      font-size: 13px;
+      line-height: 1.3;
+      text-align: center;
+    }
+    .izgled-premium .opcija[aria-pressed="true"] { box-shadow: none; font-weight: 600; color: var(--p-tinta); }
+    .izgled-premium .opcija .uzorak {
+      flex: none;
+      width: 52px;
+      height: 52px;
+      margin: 6px 0 6px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16), 0 0 0 4px var(--p-ploha), 0 0 0 5px transparent;
+    }
+    .izgled-premium .opcija:hover .uzorak {
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16), 0 0 0 4px var(--p-ploha), 0 0 0 5px var(--p-prsten);
+    }
+    .izgled-premium .opcija[aria-pressed="true"] .uzorak {
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16), 0 0 0 4px var(--p-ploha), 0 0 0 6px var(--p-tinta);
+    }
+    .izgled-premium .opcija .doplata { font-size: 12px; font-weight: 400; font-variant-numeric: tabular-nums; }
+    .izgled-premium .opcija:focus-visible { outline: 2px solid var(--p-tinta); outline-offset: 2px; }
+    /* opcije bez uzorka i s opisom: retci s tankom crtom */
+    .izgled-premium .opcije:has(> .bez-uzorka),
+    .izgled-premium .opcije.kartice { grid-template-columns: 1fr; gap: 10px; }
+    .izgled-premium .opcija.bez-uzorka,
+    .izgled-premium .opcije.kartice .opcija {
+      flex-direction: row;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid var(--p-crta);
+      border-radius: 2px;
+      background: var(--p-ploha);
+      text-align: left;
+      font-weight: 400;
+    }
+    .izgled-premium .opcija.bez-uzorka::before,
+    .izgled-premium .opcije.kartice .opcija::before {
+      content: "";
+      flex: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px var(--p-prsten);
+    }
+    .izgled-premium .opcija.bez-uzorka:hover,
+    .izgled-premium .opcije.kartice .opcija:hover { border-color: var(--p-prsten); }
+    .izgled-premium .opcija.bez-uzorka[aria-pressed="true"],
+    .izgled-premium .opcije.kartice .opcija[aria-pressed="true"] { border-color: var(--p-tinta); box-shadow: inset 0 0 0 1px var(--p-tinta); }
+    .izgled-premium .opcija.bez-uzorka[aria-pressed="true"]::before,
+    .izgled-premium .opcije.kartice .opcija[aria-pressed="true"]::before { box-shadow: inset 0 0 0 5px var(--p-tinta); }
+    .izgled-premium .opcija.bez-uzorka .doplata,
+    .izgled-premium .opcije.kartice .doplata { margin-left: auto; white-space: nowrap; }
+    .izgled-premium .opcije.kartice .uzorak { width: 32px; height: 32px; margin: 0; }
+    .izgled-premium .opcija-naziv { font-size: 14px; font-weight: 600; color: var(--p-tinta); }
+    .izgled-premium .opcija-opis { font-size: 13px; }
+
+    /* gumbi: crno-bijeli, verzal s razmakom slova */
+    .izgled-premium .buy,
+    .izgled-premium .sporedni {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      margin: 0;
+      padding: 0 24px;
+      border: 1px solid var(--p-tinta);
+      border-radius: 2px;
+      font: inherit;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .izgled-premium .buy { background: var(--p-tinta); color: #fff; }
+    .izgled-premium .buy:hover { background: #33363a; border-color: #33363a; }
+    .izgled-premium .sporedni { background: var(--p-ploha); color: var(--p-tinta); }
+    .izgled-premium .sporedni:hover { background: var(--p-tinta); color: #fff; }
+    .izgled-premium .korak-gumbi {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid var(--p-crta);
+    }
+    .izgled-premium .korak-gumbi .buy { margin-left: auto; }
+
+    /* sažetak kao zadnji korak */
+    .izgled-premium .sazetak,
+    .izgled-premium .usporedba { margin: 0 0 32px; padding: 0; border: 0; border-radius: 0; background: none; }
+    .izgled-premium .sazetak h2,
+    .izgled-premium .usporedba h2,
+    .izgled-premium .o-proizvodu h2 {
+      margin: 0 0 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--p-tiho);
+    }
+    .izgled-premium .sazetak ul { padding: 0; }
+    .izgled-premium .sazetak li { padding: 12px 0; border-bottom: 1px solid var(--p-crta); font-size: 14px; }
+    .izgled-premium .sazetak-ukupno { margin-top: 0; padding-top: 16px; border-top: 0; font-size: 20px; color: var(--p-tinta); }
+    .izgled-premium .sazetak-akcije { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 20px; }
+    .izgled-premium .sazetak-akcije .buy,
+    .izgled-premium .sazetak-akcije .obavijest,
+    .izgled-premium #spremi,
+    .izgled-premium #obrisi-sve { grid-column: 1 / -1; }
+    .izgled-premium .sazetak-akcije .sporedni { padding: 8px 12px; white-space: normal; text-align: center; line-height: 1.3; }    .izgled-premium .usporedba { padding-top: 28px; border-top: 1px solid var(--p-crta); }
+    .izgled-premium .usporedba thead th { font-size: 13px; }
+    .izgled-premium .usporedba .mali { border-radius: 2px; border-color: var(--p-tinta); }
+    .izgled-premium .usporedba .mali:hover { background: var(--p-tinta); color: #fff; }
+    .izgled-premium .usporedba tr.razlika th::after { color: var(--p-tinta); }
+    .izgled-premium .o-proizvodu { padding-top: 28px; border-top: 1px solid var(--p-crta); }
+    .izgled-premium .o-proizvodu p { margin: 0 0 8px; font-size: 14px; }
+    .izgled-premium .o-proizvodu ul { margin: 0; padding: 0; list-style: none; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .izgled-premium .info > .buy { margin-top: 8px; }
+    .izgled-premium .note { margin-top: 28px; font-size: 12px; }
+
+    /* stalna donja traka */
+    .izgled-premium.ima-traku { padding-bottom: var(--p-traka-h); }
+    .izgled-premium.ima-traku .traka-cijena {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 28px;
+      height: var(--p-traka-h);
+      padding: 0 24px 0 32px;
+      background: var(--p-ploha);
+      border-top: 1px solid var(--p-crta);
+      box-shadow: none;
+    }
+    .izgled-premium .traka-naziv {
+      display: block;
+      margin-right: auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--p-tinta);
+    }
+    .izgled-premium .traka-cijena > div { text-align: right; }
+    .izgled-premium .traka-oznaka { font-size: 11px; letter-spacing: 0.06em; color: var(--p-tiho); }
+    .izgled-premium .traka-cijena strong { font-size: 22px; font-weight: 600; color: var(--p-tinta); }
+    .izgled-premium .traka-gumbi { display: flex; gap: 8px; }
+    .izgled-premium .traka-cijena .buy,
+    .izgled-premium .traka-cijena .sporedni { padding: 0 22px; }
+    .izgled-premium.fs-open .traka-cijena { display: none !important; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .izgled-premium .opcija .uzorak { transition: box-shadow 0.18s ease; }
+      .izgled-premium .buy, .izgled-premium .sporedni { transition: background-color 0.15s, color 0.15s, border-color 0.15s; }
+    }
+
+    /* mobitel i uski zasloni: 3D prikaz gore, opcije ispod, traka dolje */
+    @media (max-width: 900px) {
+      .izgled-premium { --p-traka-h: 68px; --p-gore: 46vh; --p-gore: 46svh; }
+      .izgled-premium:not(.ima-traku) { --p-traka-h: 0px; }
+      .izgled-premium .page { grid-template-columns: minmax(0, 1fr); padding: 0; gap: 0; }
+      .izgled-premium .viewer { z-index: 5; height: 46vh; height: 46svh; }
+      .izgled-premium model-viewer { height: 100%; }
+      .izgled-premium .pause-btn { top: 12px; left: 12px; }
+      .izgled-premium .fs-btn { left: 60px; }
+      .izgled-premium .ar-btn { top: 12px; right: 12px; padding: 12px 14px; }
+      .izgled-premium .hint { bottom: 12px; width: calc(100% - 32px); white-space: normal; text-align: center; font-size: 10px; letter-spacing: 0.06em; }
+      .izgled-premium .info { min-height: 0; padding: 20px 16px 32px; border-left: 0; }
+      .izgled-premium .info h1 { font-size: 20px; }
+      .izgled-premium .price { margin-bottom: 16px; font-size: 14px; }
+      .izgled-premium .koraci { margin: 0 -16px 24px; }
+      .izgled-premium .koraci-niz { padding: 0 16px; }
+      .izgled-premium .opcije { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+      .izgled-premium .odabrano { font-size: 19px; }
+      .izgled-premium.ima-traku .traka-cijena { gap: 10px; padding: 0 12px 0 16px; justify-content: space-between; }
+      .izgled-premium .traka-naziv { display: none; }
+      .izgled-premium .traka-cijena > div { text-align: left; }
+      .izgled-premium .traka-cijena strong { font-size: 19px; }
+      .izgled-premium .traka-cijena .buy,
+      .izgled-premium .traka-cijena .sporedni { min-height: 44px; padding: 0 14px; font-size: 11px; letter-spacing: 0.1em; }
+    }
+    @media (max-width: 360px) {
+      .izgled-premium #traka-sazetak { display: none; }
+    }
   </style>
 </head>
-<body>
-  <nav class="natrag" style="max-width:1180px;margin:0 auto;padding:16px 16px 0;font-size:15px"><a href="../" style="color:var(--text)">← Svi proizvodi</a></nav>
+<body class="izgled-premium">
   <main class="page">
     <section class="viewer">
       <model-viewer
@@ -290,6 +677,7 @@
     </section>
 
     <section class="info">
+      <a class="natrag" href="../" style="display:inline-block;margin:0 0 18px;font-size:13px;color:var(--muted);text-underline-offset:3px">← Svi proizvodi</a>
       <h1>Konceptni automobil</h1>
       <div class="price" id="cijena" aria-live="polite">89.900 €</div>
       <div class="konfig">
@@ -359,11 +747,15 @@
   </main>
 
   <div class="traka-cijena" id="traka" hidden>
-    <div><span class="traka-oznaka">Ukupna cijena</span><strong id="traka-cijena"></strong></div>
-    <a class="buy" id="traka-akcija" href="#sazetak">Sažetak</a>
+    <span class="traka-naziv">Konceptni automobil</span>
+    <div id="traka-iznos"><span class="traka-oznaka">Ukupna cijena</span><strong id="traka-cijena"></strong></div>
+    <div class="traka-gumbi">
+      <button class="sporedni" type="button" id="traka-sazetak" hidden>Sažetak</button>
+      <a class="buy" id="traka-akcija" href="#sazetak">Sažetak</a>
+    </div>
   </div>
 
-  <script type="application/json" id="konfig-podaci">{"osnovna": 89900.0, "grupe": [{"naziv": "Boja", "kljuc": "boja", "vrsta": "ugradene", "opcije": [{"naziv": "Karmin crvena", "izvedba": "Carmine Candy", "uzorak": "#A3121A", "cijena": 0.0, "opis": null, "kljuc": "karmin-crvena"}, {"naziv": "Biserno bijela", "izvedba": "Pearly Swirly", "uzorak": "#ECE8E1", "cijena": 1900.0, "opis": null, "kljuc": "biserno-bijela"}, {"naziv": "Grafit", "izvedba": "Torched Graphite", "uzorak": "#3B3C40", "cijena": 1200.0, "opis": null, "kljuc": "grafit"}], "upravljani": []}, {"naziv": "Spojler", "kljuc": "spojler", "vrsta": "materijali", "opcije": [{"naziv": "Bez spojlera", "promjene": {}, "uzorak": null, "dijelovi": [], "cijena": 0.0, "opis": "Čista linija stražnjeg dijela", "kljuc": "bez-spojlera"}, {"naziv": "Niski rub", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerRub"], "cijena": 650.0, "opis": "Diskretan karbonski rub na poklopcu prtljažnika", "kljuc": "niski-rub"}, {"naziv": "Sportsko krilo", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerKrilo"], "cijena": 2400.0, "opis": "Karbonsko krilo na nosačima, s bočnim pločama", "kljuc": "sportsko-krilo"}], "upravljani": ["SpojlerKrilo", "SpojlerRub"]}, {"naziv": "Naplatci", "kljuc": "naplatci", "vrsta": "materijali", "opcije": [{"naziv": "Crni", "promjene": {"Rim1": {"boja": [0.01033, 0.01033, 0.01033], "metal": 0.0, "hrapavost": 0.4}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#1A1A1A", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crni"}, {"naziv": "Srebrni", "promjene": {"Rim1": {"boja": [0.521, 0.53948, 0.57112], "metal": 1.0, "hrapavost": 0.28}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#BFC2C7", "dijelovi": [], "cijena": 900.0, "opis": null, "kljuc": "srebrni"}, {"naziv": "Zlatni", "promjene": {"Rim1": {"boja": [0.47932, 0.28315, 0.04231], "metal": 1.0, "hrapavost": 0.3}, "Rim2": {"boja": [0.7913, 0.57112, 0.18782], "metal": 1.0, "hrapavost": 0.12}}, "uzorak": "#B8913A", "dijelovi": [], "cijena": 1800.0, "opis": null, "kljuc": "zlatni"}], "upravljani": []}, {"naziv": "Kočione čeljusti", "kljuc": "kocione-celjusti", "vrsta": "materijali", "opcije": [{"naziv": "Crvene", "promjene": {"Brake": {"boja": [0.65837, 0.0, 0.0]}}, "uzorak": "#D40000", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crvene"}, {"naziv": "Žute", "promjene": {"Brake": {"boja": [0.80695, 0.43415, 0.0]}}, "uzorak": "#E8B000", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "zute"}, {"naziv": "Plave", "promjene": {"Brake": {"boja": [0.01298, 0.10462, 0.47932]}}, "uzorak": "#1E5BB8", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "plave"}], "upravljani": []}], "naziv": "Konceptni automobil", "email": "upit@example.com", "usporedba": true, "id": "konceptni-automobil"}</script>
+  <script type="application/json" id="konfig-podaci">{"osnovna": 89900.0, "grupe": [{"naziv": "Boja", "kljuc": "boja", "vrsta": "ugradene", "opcije": [{"naziv": "Karmin crvena", "izvedba": "Carmine Candy", "uzorak": "#A3121A", "cijena": 0.0, "opis": null, "kljuc": "karmin-crvena"}, {"naziv": "Biserno bijela", "izvedba": "Pearly Swirly", "uzorak": "#ECE8E1", "cijena": 1900.0, "opis": null, "kljuc": "biserno-bijela"}, {"naziv": "Grafit", "izvedba": "Torched Graphite", "uzorak": "#3B3C40", "cijena": 1200.0, "opis": null, "kljuc": "grafit"}], "upravljani": [], "kamera": null}, {"naziv": "Spojler", "kljuc": "spojler", "vrsta": "materijali", "opcije": [{"naziv": "Bez spojlera", "promjene": {}, "uzorak": null, "dijelovi": [], "cijena": 0.0, "opis": "Čista linija stražnjeg dijela", "kljuc": "bez-spojlera"}, {"naziv": "Niski rub", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerRub"], "cijena": 650.0, "opis": "Diskretan karbonski rub na poklopcu prtljažnika", "kljuc": "niski-rub"}, {"naziv": "Sportsko krilo", "promjene": {}, "uzorak": null, "dijelovi": ["SpojlerKrilo"], "cijena": 2400.0, "opis": "Karbonsko krilo na nosačima, s bočnim pločama", "kljuc": "sportsko-krilo"}], "upravljani": ["SpojlerKrilo", "SpojlerRub"], "kamera": "140deg 73deg"}, {"naziv": "Naplatci", "kljuc": "naplatci", "vrsta": "materijali", "opcije": [{"naziv": "Crni", "promjene": {"Rim1": {"boja": [0.01033, 0.01033, 0.01033], "metal": 0.0, "hrapavost": 0.4}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#1A1A1A", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crni"}, {"naziv": "Srebrni", "promjene": {"Rim1": {"boja": [0.521, 0.53948, 0.57112], "metal": 1.0, "hrapavost": 0.28}, "Rim2": {"boja": [1.0, 1.0, 1.0], "metal": 1.0, "hrapavost": 0.05}}, "uzorak": "#BFC2C7", "dijelovi": [], "cijena": 900.0, "opis": null, "kljuc": "srebrni"}, {"naziv": "Zlatni", "promjene": {"Rim1": {"boja": [0.47932, 0.28315, 0.04231], "metal": 1.0, "hrapavost": 0.3}, "Rim2": {"boja": [0.7913, 0.57112, 0.18782], "metal": 1.0, "hrapavost": 0.12}}, "uzorak": "#B8913A", "dijelovi": [], "cijena": 1800.0, "opis": null, "kljuc": "zlatni"}], "upravljani": [], "kamera": "58deg 83deg"}, {"naziv": "Kočione čeljusti", "kljuc": "kocione-celjusti", "vrsta": "materijali", "opcije": [{"naziv": "Crvene", "promjene": {"Brake": {"boja": [0.65837, 0.0, 0.0]}}, "uzorak": "#D40000", "dijelovi": [], "cijena": 0.0, "opis": null, "kljuc": "crvene"}, {"naziv": "Žute", "promjene": {"Brake": {"boja": [0.80695, 0.43415, 0.0]}}, "uzorak": "#E8B000", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "zute"}, {"naziv": "Plave", "promjene": {"Brake": {"boja": [0.01298, 0.10462, 0.47932]}}, "uzorak": "#1E5BB8", "dijelovi": [], "cijena": 450.0, "opis": null, "kljuc": "plave"}], "upravljani": [], "kamera": "58deg 83deg"}], "naziv": "Konceptni automobil", "email": "upit@example.com", "usporedba": true, "id": "konceptni-automobil"}</script>
   <script>
     const mv = document.getElementById('mv');
     const bar = document.getElementById('bar');
@@ -737,6 +1129,150 @@
       if (PODACI.usporedba) pokreniUsporedbu();
       mv.addEventListener('load', primijeniMaterijale);
       mv.addEventListener('variant-applied', primijeniMaterijale);
+    }
+
+    // Izgled "premium": svaka grupa opcija je jedan korak, sažetak je zadnji korak,
+    // donja traka je uvijek vidljiva, a kamera se okrene prema dijelu koji se bira
+    // (smjer iz "_kut" u receptu).
+    const PREMIUM = document.body.classList.contains('izgled-premium');
+    if (PREMIUM && !IMA_CIJENE) document.getElementById('cijena').hidden = true;
+    if (PREMIUM && KONFIG.length) pokreniKorake();
+    function pokreniKorake() {
+      const info = document.querySelector('.info');
+      const konfig = info.querySelector('.konfig');
+      const smanjeno = matchMedia('(prefers-reduced-motion: reduce)');
+      const grupe = [...konfig.querySelectorAll(':scope > .grupa')];
+      grupe.forEach((g, i) => { g.id = 'korak-' + i; g.tabIndex = -1; });
+
+      // zadnji korak: sažetak, usporedba i opis proizvoda
+      const zadnji = el('div', undefined, 'grupa korak-sazetak');
+      zadnji.id = 'korak-sazetak';
+      zadnji.tabIndex = -1;
+      zadnji.setAttribute('role', 'group');
+      zadnji.setAttribute('aria-label', 'Sažetak');
+      const oProizvodu = el('div', undefined, 'o-proizvodu');
+      oProizvodu.append(el('h2', 'O proizvodu'), ...info.querySelectorAll(':scope > p, :scope > ul'));
+      zadnji.append(document.getElementById('sazetak'), document.getElementById('usporedba'), oProizvodu);
+      const kosarica = info.querySelector(':scope > .buy');
+      if (kosarica) {
+        if (PODACI.email) kosarica.hidden = true;   // upit je glavni korak, košarica bi bila suvišna
+        else zadnji.append(kosarica);
+      }
+      const napomena = info.querySelector(':scope > .note');
+      if (napomena) zadnji.append(napomena);
+      konfig.append(zadnji);
+      const koraci = [...grupe, zadnji];
+      const nazivi = KONFIG.map((g) => g.naziv).concat('Sažetak');
+
+      const nav = el('nav', undefined, 'koraci');
+      nav.setAttribute('aria-label', 'Koraci konfiguracije');
+      const gumbi = nazivi.map((n, i) => {
+        const b = el('button', n);
+        b.type = 'button';
+        b.setAttribute('aria-controls', koraci[i].id);
+        b.addEventListener('click', () => idiNa(i));
+        return b;
+      });
+      const niz = el('div', undefined, 'koraci-niz');
+      niz.append(...gumbi);
+      nav.append(niz);
+      function oznaciPreljev() {
+        const kraj = niz.scrollWidth - niz.clientWidth;
+        niz.classList.toggle('vise-lijevo', niz.scrollLeft > 2);
+        niz.classList.toggle('vise-desno', niz.scrollLeft < kraj - 2);
+      }
+      niz.addEventListener('scroll', oznaciPreljev, { passive: true });
+      window.addEventListener('resize', oznaciPreljev);
+      nav.addEventListener('keydown', (e) => {
+        const i = gumbi.indexOf(document.activeElement);
+        if (i < 0) return;
+        let j = -1;
+        if (e.key === 'ArrowRight') j = Math.min(i + 1, gumbi.length - 1);
+        else if (e.key === 'ArrowLeft') j = Math.max(i - 1, 0);
+        else if (e.key === 'Home') j = 0;
+        else if (e.key === 'End') j = gumbi.length - 1;
+        if (j < 0) return;
+        e.preventDefault();
+        gumbi[j].focus();
+        idiNa(j);
+      });
+      konfig.before(nav);
+
+      const podnozje = el('div', undefined, 'korak-gumbi');
+      const natrag = el('button', 'Natrag', 'sporedni');
+      natrag.type = 'button';
+      const dalje = el('button', '', 'buy');
+      dalje.type = 'button';
+      natrag.addEventListener('click', () => idiNa(trenutni - 1, true));
+      dalje.addEventListener('click', () => idiNa(trenutni + 1, true));
+      podnozje.append(natrag, dalje);
+      konfig.after(podnozje);
+
+      // kamera: "_kut" iz recepta (pripremi.py ga pretvara u kut za model-viewer)
+      const POCETNA = mv.getAttribute('camera-orbit') || '35deg 72deg auto';
+      let kameraRazmak = false;
+      function kamera(i, korisnik) {
+        const g = KONFIG[i];
+        let cilj = g && g.kamera ? g.kamera + ' auto' : POCETNA;
+        // isti tekst ne pokreće promjenu; razmak na kraju ne mijenja značenje
+        kameraRazmak = !kameraRazmak;
+        if (kameraRazmak) cilj += ' ';
+        if (korisnik && mv.hasAttribute('auto-rotate')) postaviOkretanje(false);
+        mv.cameraOrbit = cilj;
+        if (smanjeno.matches && mv.jumpCameraToGoal) mv.jumpCameraToGoal();
+      }
+
+      let trenutni = 0;
+      function idiNa(i, fokusNaKorak) {
+        if (i < 0 || i >= koraci.length) return;
+        const promjena = i !== trenutni && trenutni >= 0;   // prvi prikaz ne pomiče kameru
+        trenutni = i;
+        koraci.forEach((k, j) => { k.hidden = j !== i; });
+        gumbi.forEach((b, j) => {
+          if (j === i) b.setAttribute('aria-current', 'step');
+          else b.removeAttribute('aria-current');
+        });
+        // pomakni koračnu traku samo toliko da se aktivni korak vidi cijeli (rub od 56 px blijedi)
+        const b = gumbi[i], rub = 56;
+        let lijevo = niz.scrollLeft;
+        if (b.offsetLeft - rub < lijevo) lijevo = b.offsetLeft - rub;
+        else if (b.offsetLeft + b.offsetWidth + rub > lijevo + niz.clientWidth) lijevo = b.offsetLeft + b.offsetWidth + rub - niz.clientWidth;
+        if (i === 0) lijevo = 0;
+        if (i === gumbi.length - 1) lijevo = niz.scrollWidth;
+        niz.scrollTo({ left: Math.max(0, lijevo), behavior: smanjeno.matches ? 'auto' : 'smooth' });
+        natrag.hidden = i === 0;
+        dalje.hidden = i === koraci.length - 1;
+        if (i < koraci.length - 1) dalje.textContent = 'Dalje: ' + nazivi[i + 1];
+        if (promjena) kamera(i, true);
+        if (fokusNaKorak) {
+          koraci[i].focus({ preventScroll: true });
+          const vrh = konfig.getBoundingClientRect().top;
+          const gore = parseFloat(getComputedStyle(konfig).scrollMarginTop) || 0;
+          if (vrh < gore) konfig.scrollIntoView({ block: 'start', behavior: smanjeno.matches ? 'auto' : 'smooth' });
+        }
+      }
+
+      // donja traka: uvijek vidljiva; "Sažetak" vodi na zadnji korak
+      document.getElementById('traka').hidden = false;
+      document.body.classList.add('ima-traku');
+      if (!IMA_CIJENE) document.getElementById('traka-iznos').hidden = true;
+      const trakaSazetak = document.getElementById('traka-sazetak');
+      const idiNaSazetak = () => idiNa(koraci.length - 1, true);
+      if (PODACI.email) {
+        trakaSazetak.hidden = false;
+        trakaSazetak.addEventListener('click', idiNaSazetak);
+      } else {
+        document.getElementById('traka-akcija').addEventListener('click', (e) => { e.preventDefault(); idiNaSazetak(); });
+      }
+      // "Prikaži" u usporedbi: kamera na početni kut da se vidi cijeli model
+      document.getElementById('usporedba-okvir').addEventListener('click', (e) => {
+        const b = e.target.closest('.mali');
+        if (b && b.textContent === 'Prikaži') kamera(koraci.length - 1, true);
+      });
+
+      trenutni = -1;
+      idiNa(0);
+      oznaciPreljev();
     }
   </script>
 </body>
