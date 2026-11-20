@@ -69,9 +69,21 @@
 
     .products {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
     }
+
+    .media { margin-top: 56px; }
+    .media-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; align-items: stretch; }
+    .media figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+    .media video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: var(--soft); }
+    .media figcaption { padding: 14px 18px 18px; color: var(--muted); font-size: 15px; }
+    .media figcaption strong { display: block; color: var(--text); font-size: 17px; margin-bottom: 4px; }
+    .pano { text-decoration: none; }
+    .pano img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: var(--soft); }
+    .pano:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .pano .cta { display: block; padding: 0 18px 18px; }
+    @media (max-width: 860px) { .media-grid { grid-template-columns: 1fr; } }
     .product {
       background: var(--card);
       border: 1px solid var(--line);
@@ -156,7 +168,7 @@
     <header class="hero">
       <span class="eyebrow">Studio 19</span>
       <h1>3D proizvodi za webshop</h1>
-      <p class="lead">Kupac proizvod razgleda sa svih strana, isproba ga u svojoj sobi i sam složi željenu izvedbu, sve na stranici vaše trgovine. Isprobajte tri primjera ispod.</p>
+      <p class="lead">Kupac proizvod razgleda sa svih strana, isproba ga u svojoj sobi i sam složi željenu izvedbu, sve na stranici vaše trgovine. Iz istog modela nastaju i fotografije, video i 360° prikaz u prostoru. Isprobajte primjere ispod.</p>
     </header>
 
     <ul class="features">
@@ -187,6 +199,15 @@
       <p class="section-lead">Otvorite primjer, okrenite proizvod i isprobajte opcije.</p>
 
       <div class="products">
+        <a class="product" href="pergola/">
+          <img src="pergola/poster.webp" alt="Antracit bioklimatska pergola sa zakretnim lamelama" width="1600" height="900" loading="lazy">
+          <div class="body">
+            <h3>Pergola s konfiguratorom</h3>
+            <p>Tri veličine, boje okvira i lamela, LED rasvjeta i zip zastori, s cijenom koja se odmah osvježi. Uz to video i 360° prikaz u vrtu.</p>
+            <ul class="tags"><li>Konfigurator</li><li>Veličine</li><li>Video</li><li>360° prikaz</li></ul>
+            <span class="cta">Otvori primjer →</span>
+          </div>
+        </a>
         <a class="product" href="fotelja/">
           <img src="fotelja/poster.jpg" alt="Fotelja Mid Century od drva i kože" width="1600" height="900" loading="lazy">
           <div class="body">
@@ -227,6 +248,24 @@
         </div>
       </section>
 
+      <section class="media" aria-labelledby="media-naslov">
+        <h2 class="section-title" id="media-naslov">Video i 360° prikaz iz istog modela</h2>
+        <p class="section-lead">Kratki video za galeriju i društvene mreže te 360° prikaz proizvoda u prostoru, bez snimanja na terenu.</p>
+        <div class="media-grid">
+          <figure>
+            <video src="pergola/video.mp4" poster="pergola/poster.webp" controls muted loop playsinline preload="metadata" aria-label="Video: pergola se okreće za 360 stupnjeva"></video>
+            <figcaption><strong>Video okretanja</strong>10 sekundi, 1920 × 1080, u petlji bez skoka. Može i kvadratni ili uspravni format za društvene mreže.</figcaption>
+          </figure>
+          <a class="pano" href="pergola/panorama.html">
+            <figure>
+              <img src="pergola/panorama-mala.jpg" alt="Pergola na putu u vrtu, 360° prikaz" width="1280" height="720" loading="lazy">
+              <figcaption><strong>360° prikaz u vrtu</strong>Kupac se okreće oko sebe i vidi proizvod u okruženju. Umjesto probnog vrta može biti i fotografija stvarnog dvorišta kupca.</figcaption>
+              <span class="cta">Otvori 360° prikaz →</span>
+            </figure>
+          </a>
+        </div>
+      </section>
+
       <div class="note">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h0"/></svg>
         <p><strong>„Pogledaj u svom prostoru” radi na mobitelu</strong>, kad je stranica na sigurnoj adresi (https), kao ova. Na računalu se proizvod okreće i zumira, a gumb za prostor ne pokreće prikaz u sobi.</p>
@@ -239,6 +278,7 @@
         <li>Fotelja: <em>Mid Century Lounge Chair</em>, Kuutti Siitonen, <a href="https://polyhaven.com/a/mid_century_lounge_chair">Poly Haven</a>, licenca CC0.</li>
         <li>Automobil: <em>CarConcept</em>, Eric Chadwick, Darmstadt Graphics Group, iz <a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept">Khronos glTF Sample Assets</a>, licenca <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a>. Spojleri su probni dijelovi Studija 19.</li>
         <li>Slušalice: vlastiti model Studija 19.</li>
+        <li>Pergola: vlastiti model Studija 19 izrađen po tipičnim mjerama; cijene su primjer za demo. Okolina 360° prikaza: <em>Ninomaru Teien</em>, Greg Zaal, <a href="https://polyhaven.com/a/ninomaru_teien">Poly Haven</a>, licenca CC0.</li>
       </ul>
     </footer>
   </div>
